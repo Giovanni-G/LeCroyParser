@@ -2,11 +2,11 @@
 
 (* ::Input::Initialization:: *)
 BeginPackage["LeCroyParser`"];
-ImportLecroyBinary::usage="ImportLecroyBinary[\"filename\"] returns data in the form {{t1,V1},{t2,V2,...}}.";
-ImportLecroyBinary::argnumfew="ImportLecroyBinary was called with `1` arguments. At least 1 expected.";
-ImportLecroyBinary::argnummany="ImportLecroyBinary was called with `1` arguments. At most 2 expected.";
+ImportLeCroyBinary::usage="ImportLeCroyBinary[\"filename\"] returns data in the form {{t1,V1},{t2,V2,...}}.";
+ImportLeCroyBinary::argnumfew="ImportLeCroyBinary was called with `1` arguments. At least 1 expected.";
+ImportLeCroyBinary::argnummany="ImportLeCroyBinary was called with `1` arguments. At most 2 expected.";
 Begin["`Private`"];
-ImportLecroyBinary[filename_,verbose_:False]:=Block[{data,xdata,ydata,buffer,file,posWavedesc,header,waveDesc,template,commType,commOrder,byteOrdering,waveDescriptor,userText,trigTimeArray,waveArray1,instrumentName,instrumentNumber,traceLabel,waveArrayCount,verticalGain,verticalOffset,nominalBits,horizontalInterval,horizontalOffset,verticalUnits,horizontalUnits,triggerTime,recordType,processingDone,timeBase,verticalCoupling,probeAttenuation,fixedVerticalGain,bandwidthLimit,verticalVernier,acqVerticalOffset,channel,verticalScale,timeScale,sampleRate,wave},
+ImportLeCroyBinary[filename_,verbose_:False]:=Block[{data,xdata,ydata,buffer,file,posWavedesc,header,waveDesc,template,commType,commOrder,byteOrdering,waveDescriptor,userText,trigTimeArray,waveArray1,instrumentName,instrumentNumber,traceLabel,waveArrayCount,verticalGain,verticalOffset,nominalBits,horizontalInterval,horizontalOffset,verticalUnits,horizontalUnits,triggerTime,recordType,processingDone,timeBase,verticalCoupling,probeAttenuation,fixedVerticalGain,bandwidthLimit,verticalVernier,acqVerticalOffset,channel,verticalScale,timeScale,sampleRate,wave},
 (* Identify the header block *)
 file=OpenRead[filename,BinaryFormat->True];
 If[file==$Failed,Return[Null]];
@@ -57,13 +57,13 @@ channel=1+First@BinaryReadList[file,"Integer16",1,ByteOrdering->byteOrdering]; (
 verticalScale=ToString[TraditionalForm[EngineeringForm[fixedVerticalGain probeAttenuation]]]<>" V/div";
 timeScale=ToString[TraditionalForm[EngineeringForm[timeBase]]]<>" s/div";
 sampleRate=ToString[TraditionalForm[EngineeringForm[1/horizontalInterval]]]<>" Samples/s";
-If[verbose,Print["Vertical scale: "<>verticalScale,"Horizontal scale: "<>timeScale,"Sampling rate: "<>sampleRate]];
+If[verbose,Print["Vertical scale: "<>verticalScale,"\n","Horizontal scale: "<>timeScale,"\n","Sampling rate: "<>sampleRate]];
 (* Parse data *)
 wave=BinaryReadList[file,Switch[commType,0,"Integer8",1,"Integer16",_,"Integer8"],waveArray1]; (* wave data *)
 ydata=wave verticalGain-verticalOffset;
 xdata=Range[waveArrayCount]horizontalInterval+horizontalOffset;
 Return[{xdata,ydata}\[Transpose]]
 ]
-ImportLecroyBinary[args___]:=(If[Length[{args}]<1,Message[ImportLecroyBinary::argnumfew,Length[{args}]],Message[ImportLecroyBinary::argnummany,Length[{args}]]];$Failed)
+ImportLeCroyBinary[args___]:=(If[Length[{args}]<1,Message[ImportLeCroyBinary::argnumfew,Length[{args}]],Message[ImportLeCroyBinary::argnummany,Length[{args}]]];$Failed)
 End[];
 EndPackage[];
